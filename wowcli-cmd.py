@@ -21,16 +21,31 @@ except:
     os.system("pip3 install art")
     from art import *
 
+#make wcsetup.txt if it doesn't exist
+try:
+    f = open("wcsetup.txt", "r")
+    #we run each line of wcsetup.txt as a command
+    lines = f.readlines()
+    for line in lines:
+        os.system("{}".format(line))
+    f.close()
+except:
+    os.system("touch wcsetup.txt")
+global prompt
+prompt = "*d> "
+
 #main loop
-print(text2art("WowCLI-CMD")) #print logo
 while True:
     #get input
-    command = input("$> ")
+    cwd = os.getcwd()
+    nprompt = prompt.replace("*d", cwd)
+    nprompt = nprompt.replace("*n", os.getlogin())
+    command = input(nprompt)
     if command == "exit":
         print("Goodbye!")
         exit()
         #we need these lines because the command line exit function doesn't work
-    elif command == "neofetch":
+    elif command == "specfetch":
         print("\033[94m          .?77777777777777$.")
         print("\033[94m          777..777777777777$+           ")
         print("\033[94m         .77    7777777777$$$           ")
@@ -56,5 +71,35 @@ while True:
         print("\033[93m          ,=======++++++,,++,           \033[0m")
         print("\033[93m          ..=====+++++++++=.            \033[0m")
         print("\033[93m                ..~+=... \033[0m")
+    elif command == "updatecli":
+        print("Updating...")
+        #the cli is at https://github.com/LeWolfYT/WowCLI.git
+        cwd = os.getcwd()
+        os.system("cd ~/")
+        #is there a wowcli folder already?
+        try:
+            os.system("cd ~/WowCLI")
+            os.system("git pull")
+        except:
+            os.system("git clone https://github.com/LeWolfYT/WowCLI.git")
+        os.system("cd "+cwd)
+    elif command == "clihelp":
+        #print help
+        print("WOWCLI HELP")
+        print("CUSTOM COMMANDS:")
+        print("specfetch (alternative to neofetch)")
+        print("updatecli (updates the cli, requires git)")
+        print("help (this help menu)")
+        print("prompt (changes the prompt)")
+        print("exit (exits the cli)")
+    elif len(command)>7 and command[:6] == "prompt ":
+        #change prompt
+        #special characters:
+        #%*d = cwd
+        #%*n = username
+        #get what the input is after the word "prompt"
+        prompt = command[7:]
+    elif command == "prompt":
+        print("Current prompt: " + prompt)
     else:
         os.system(command)
